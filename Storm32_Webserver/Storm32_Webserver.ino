@@ -33,6 +33,8 @@ NOTES:
 
 ToDo:
   Pan Mode Control (reply[120]) and Pan Mode Setting 3 (reply[124])
+  Add controls for all parameters
+  Improve motion control page
 */
 
 #include <ESP8266WiFi.h>
@@ -41,7 +43,7 @@ ToDo:
 #include <ESP8266mDNS.h>
 #include <EEPROM.h>
 
-
+#define SERVER_NAME "EDWARD"
 #define PAYLOAD_SIZE 391 //263
 #define EEPROM_STRING_SIZE 9
 #define EEPROM_BLOCK_SIZE (PAYLOAD_SIZE + EEPROM_STRING_SIZE)
@@ -52,7 +54,8 @@ ToDo:
 #define REPLY_BUFFER_SIZE 500
 
 
-const char *ssid = "EDWARD";
+const char *ssid = SERVER_NAME;
+String serverName = SERVER_NAME;
 char reply[REPLY_BUFFER_SIZE];
 int replyLength = 0;
 String dataList[32] = {"State","Status","Status2","Status3","Performance","Errors","Voltage","Millis","Cycle Time","IMU1Pitch","IMU1Roll","IMU1Yaw","IMU1Xr(pitch)","IMU1Yr(yaw)","IMU1Zr(roll)","PIDoutPitch","PIDoutRoll","PIDoutYaw","RCinputPitch","RCinputRoll","RCinputYaw","IMU2Pitch","IMU2Roll","IMU2Yaw","PIDoutPitchr","PIDoutRollr","PIDoutYawr","?","?","?","IMU1AHRSaccMag","IMU1AHRSaccConf"};
@@ -233,7 +236,7 @@ ESP8266WebServer server(80);
 
 String htmlButton = "<input type=\"submit\" style=\"font-size:33pt;height:100px;width:500px;\" ";
 
-String webPageMain = "<h1>EDWARD (gimbal)</h1><form action=\"/page\">" + htmlButton + "name=\"Page\" value=\"Presets\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Info\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Read_Params\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Live_Data\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Motion\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Advanced\" ?></form><form action=\"/act\">Command:<br><input type=\"text\" name=\"action\" style=\"font-size:100pt;height:200px;width:500px;\" value=\"\"><br><br>" + htmlButton + "value=\"Submit\"></form>";
+String webPageMain = "<h1>" + serverName + " (Storm32)</h1><form action=\"/page\">" + htmlButton + "name=\"Page\" value=\"Presets\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Info\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Read_Params\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Live_Data\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Motion\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Advanced\" ?></form><form action=\"/act\">Command:<br><input type=\"text\" name=\"action\" style=\"font-size:100pt;height:200px;width:500px;\" value=\"\"><br><br>" + htmlButton + "value=\"Submit\"></form>";
 String webPagePresets0 = "<form action=\"/page\">" + htmlButton + "name=\"Page\" value=\"Home\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Save_Preset\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"Name_Preset\" ?><br><br>" + htmlButton + "name=\"Page\" value=\"View_Presets\" ?><br><br><h1>Load Presets</h1><br>";
 String webPagePresets1 = "<br>" + htmlButton + "name=\"Page\" value=\"loadOne\" ?><br><br>";
 String webPagePresets2 = "<br>" + htmlButton + "name=\"Page\" value=\"loadTwo\" ?><br><br>";
